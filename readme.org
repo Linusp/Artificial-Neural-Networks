@@ -1,0 +1,10 @@
+* 人工神经网络(Artificial Neural Network, ANN)
+
+各种神经网络结构的实现及相关的理论笔记。
+
+** 不同类型的 ANN
+
+*** TODO Perceptron
+*** TODO Multilayer Perceptron
+*** TODO Convolution Neural Network
+*** TODO Recurrent Neural Network
