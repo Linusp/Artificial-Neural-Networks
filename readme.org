@@ -1,3 +1,13 @@
 * Connections
 
   各种神经网络结构的实现及相关的理论笔记。
+
+** 安装和使用
+
+   #+BEGIN_SRC python
+   pip install git+https://github.com/Linusp/connections.git
+   #+END_SRC
+
+   *TODO* 使用
+
+   *TODO* 文档说明
