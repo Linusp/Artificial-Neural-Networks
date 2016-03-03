@@ -1,14 +1,13 @@
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
-PIP_MIRROR = https://pypi.mirrors.ustc.edu.cn/simple
 
 PIP_INSTALL = $(PIP) install --exists-action=w
 
 setup: venv deps
 
 deps: venv
-	@$(PIP_INSTALL) -i $(PIP_MIRROR) -r reqs.txt
+	@$(PIP_INSTALL) -r reqs.txt
 
 venv:
 	@virtualenv $(VENV) --prompt '<venv:connections>'
