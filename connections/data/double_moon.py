@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 
 def half_moon(center, inner_radius, outer_radius, rotate=0.0):
     res = set([])
-    total_num = 0.25 * np.pi * (outer_radius ** 2 - inner_radius ** 2)
+    total_num = 0.1 * (outer_radius ** 2 - inner_radius ** 2)
     rotate_rad = np.pi * rotate / 180.0
 
-    for i in range(int(total_num)):
+    for _ in range(int(total_num)):
         rad = np.pi * np.random.random_sample() + rotate_rad
         radius = np.random.randint(inner_radius, outer_radius + 1)
 
@@ -35,10 +35,12 @@ def double_moon(inner_radius=20, outer_radius=40, dis=1, rotate=0.0):
     x_2, y_2 = x_2 * np.cos(rotate_rad) + y_2 * np.sin(rotate_rad), \
                y_2 * np.cos(rotate_rad) - x_2 * np.sin(rotate_rad)
 
-    res_1 = half_moon((x_1, y_1), inner_radius, outer_radius, rotate)
-    res_2 = half_moon((x_2, y_2), inner_radius, outer_radius, rotate + 180.0)
+    res_1 = np.array(list(half_moon((x_1, y_1), inner_radius, outer_radius, rotate)))
+    res_class_1 = np.ones((res_1.shape[0], ))
+    res_2 = np.array(list(half_moon((x_2, y_2), inner_radius, outer_radius, rotate + 180.0)))
+    res_class_2 = np.zeros((res_2.shape[0], ))
 
-    return res_1, res_2
+    return np.vstack((res_1, res_2)), np.hstack((res_class_1, res_class_2))
 
 
 def plot_points(data):
@@ -47,10 +49,8 @@ def plot_points(data):
     for point in data:
         ax1.plot(point[0], point[1], 'ro')
 
-    plt.show()
+    plt.savefig('a.png')
 
 if __name__ == '__main__':
-    res1, res2 = double_moon(dis=-5)
-    points = list(res1)
-    points.extend(list(res2))
-    plot_points(points)
+    res1, res2 = double_moon(10, 30, dis=-10, rotate=30)
+    plot_points(res1)
