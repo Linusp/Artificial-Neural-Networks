@@ -2,50 +2,39 @@
 
 from __future__ import absolute_import
 
+import theano
+import theano.tensor as T
 import numpy as np
-from connections.activator import SigmoidActivator
 
 
 class LogisticRegression(object):
     def __init__(self, input_num):
-        self.weights = np.ones((input_num + 1, ))
-        self.activator = SigmoidActivator
+        X = T.fmatrix('x')
+        Y = T.fvector('y')
+        W = theano.shared(np.random.randn(input_num))
 
-    def forward(self, data):
-        x_data = data
-        if len(x_data.shape) == 1:
-            x_data = x_data.reshape((1, data.shape[0]))
+        p_y_given_x = T.nnet.sigmoid(T.dot(X, W))
+        y_pred = p_y_given_x > 0.5
 
-        self.input_data = np.hstack((np.ones((x_data.shape[0], 1)), x_data))
-        self.output_data = self.activator.active(self.input_data.dot(self.weights))
-        return self.output_data
+        cost = T.mean((p_y_given_x - Y) ** 2)
+        # cost = T.mean(T.nnet.binary_crossentropy(p_y_given_x, Y))
+        grad = T.grad(cost=cost, wrt=W)
+        update = [[W, W - grad * 0.3]]
 
-    def predict(self, data):
-        return 1 if self.forward(data) > 0.5 else 0
+        self.train_func = theano.function(inputs=[X, Y], outputs=cost, updates=update, allow_input_downcast=True)
+        self.predict_func = theano.function(inputs=[X], outputs=y_pred, allow_input_downcast=True)
 
-    def error(self, target):
-        error = self.output_data - target
-        return error
+    def train(self, train_x, train_y, nb_epoch=10, batch_size=32):
+        train_size = np.array(train_x).shape[0]
+        for i in range(nb_epoch):
+            for start in range(0, train_size, batch_size):
+                cost = self.train_func(train_x[start:start+batch_size], train_y[start:start+batch_size])
 
-    def backward(self, target, learning_rate=0.1, weight_penalty=0.3):
-        p_y_given_x = self.output_data
-        weights_decay = learning_rate * weight_penalty * self.weights
-        weights_diff = learning_rate * (p_y_given_x - target).reshape((target.shape[0], 1)) * self.input_data
-        weights_diff = (weights_diff.sum(axis=0) + weights_decay) / target.shape[0]
-        self.weights -= weights_diff
+            print '[{}]Cost: {}'.format(i, cost)
 
-    def train(self, train_data, test_data, learning_rate=0.3, weight_penalty=0.1):
-        train_data_x, train_data_y = train_data
-        test_data_x, test_data_y = test_data
-
-        for i in range(20):
-            self.forward(test_data_x)
-            error = np.sqrt((self.error(test_data_y) ** 2).mean())
-            print 'Train loop {0}: test error is {1}'.format(i + 1, error)
-
-            self.forward(train_data_x)
-            self.backward(train_data_y, learning_rate, weight_penalty)
-
+    def predict(self, test_x):
+        y = self.predict_func(test_x)
+        return y
 
 def shuffle(x, y):
     index_range = np.arange(x.shape[0])
@@ -59,6 +48,7 @@ if __name__ == '__main__':
     res1, res2 = double_moon(inner_radius=10, outer_radius=30, dis=-3, rotate=30)
     res1, res2 = shuffle(res1, res2)
 
-    train_size = len(res1) * 9 / 10
+    train_num = len(res1) * 9 / 10
     lr = LogisticRegression(2)
-    lr.train((res1[:train_size], res2[:train_size]), (res1[train_size:], res2[train_size:]))
+    lr.train(res1[:train_num], res2[:train_num])
+    # lr.train((res1[:train_size], res2[:train_size]), (res1[train_size:], res2[train_size:]))
