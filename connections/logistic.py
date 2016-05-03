@@ -41,14 +41,3 @@ def shuffle(x, y):
     np.random.shuffle(index_range)
 
     return x[index_range], y[index_range]
-
-
-if __name__ == '__main__':
-    from connections.data.double_moon import double_moon
-    res1, res2 = double_moon(inner_radius=10, outer_radius=30, dis=-3, rotate=30)
-    res1, res2 = shuffle(res1, res2)
-
-    train_num = len(res1) * 9 / 10
-    lr = LogisticRegression(2)
-    lr.train(res1[:train_num], res2[:train_num])
-    # lr.train((res1[:train_size], res2[:train_size]), (res1[train_size:], res2[train_size:]))
