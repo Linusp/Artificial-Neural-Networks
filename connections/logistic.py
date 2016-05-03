@@ -26,6 +26,7 @@ class LogisticRegression(object):
 
     def train(self, train_x, train_y, nb_epoch=10, batch_size=32):
         train_size = np.array(train_x).shape[0]
+        print 'train on {} record'.format(train_size)
         for i in range(nb_epoch):
             for start in range(0, train_size, batch_size):
                 cost = self.train_func(train_x[start:start+batch_size], train_y[start:start+batch_size])
