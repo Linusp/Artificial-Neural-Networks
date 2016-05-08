@@ -2,14 +2,20 @@
 
 import numpy as np
 
+from materials import double_moon
 from connections.models import MLP
 from connections.layers import DenseLayer
 
 
-m = MLP()
-m.add_layer(DenseLayer(3, 4))
-m.add_layer(DenseLayer(4, 2, activation='sigmoid'))
-m.compile()
+if __name__ == '__main__':
+    m = MLP()
+    m.add_layer(DenseLayer(2, 5, activation='sigmoid'))
+    m.add_layer(DenseLayer(5, 1, activation='sigmoid'))
+    m.compile(lr=0.1)
 
-x = np.random.randn(4, 3)
-print m.predict(x)
+    double_moon = double_moon(50, 80, 1)
+    train_x = double_moon[['x', 'y']].as_matrix()
+    train_y = double_moon['class'].as_matrix()
+    train_y = train_y.reshape((train_y.shape[0], 1))
+
+    m.train(train_x, train_y)
