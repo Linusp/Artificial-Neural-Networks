@@ -16,7 +16,7 @@ class MLP(object):
 
     def add_layer(self, layer):
         if self.layers and self.layers[-1].output_dim != layer.input_dim:
-            raise ValueError('layer\'s input_dim mismatched, expect {} but get'.format(self.layers[-1].output_dim, layer.input_dim))
+            raise ValueError('layer\'s input_dim mismatched, expect {} but get {}'.format(self.layers[-1].output_dim, layer.input_dim))
         self.layers.append(layer)
         self.params.extend(layer.params)
 
@@ -35,7 +35,7 @@ class MLP(object):
         cost = T.mean((p_y_given_x - Y) ** 2)
         grad = [T.grad(cost, param) for param in self.params]
         updates = [
-            (param, param - lr * param)
+            (param, param - lr * gparam)
             for param, gparam in zip(self.params, grad)
         ]
         self.train_func = theano.function(
