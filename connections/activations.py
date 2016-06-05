@@ -7,12 +7,17 @@ import theano.tensor as T
 import numpy as np
 
 
+ACTIVATIONS = {
+    'linear': lambda x: x,
+    'sigmoid': T.nnet.sigmoid,
+    'tanh': T.tanh,
+    'softmax': T.nnet.softmax,
+}
+
+
 def get_activation(name):
-    if name == 'linear':
-        return lambda x: x
-    elif name == 'sigmoid':
-        return T.nnet.sigmoid
-    elif name == 'softmax':
-        return T.nnet.softmax
-    else:
-        raise NotImplementedError
+    act_func = ACTIVATIONS.get(name)
+    if not act_func:
+        raise NotImplementedError(name)
+
+    return act_func
