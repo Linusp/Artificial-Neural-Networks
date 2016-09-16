@@ -3,12 +3,12 @@
 import numpy as np
 
 from materials import double_moon
-from connections.models import MLP
+from connections.models import Model
 from connections.layers import DenseLayer
 
 
 if __name__ == '__main__':
-    m = MLP()
+    m = Model()
     m.add_layer(DenseLayer(2, 5, activation='sigmoid'))
     m.add_layer(DenseLayer(5, 1, activation='sigmoid'))
     m.compile(lr=0.1)

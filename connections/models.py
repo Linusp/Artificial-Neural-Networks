@@ -9,7 +9,7 @@ import theano.tensor as T
 import numpy as np
 
 
-class MLP(object):
+class Model(object):
     def __init__(self, layers=None):
         self.layers = [] if not layers else layers
         self.params = list(chain.from_iterable([layer.params for layer in self.layers]))
