@@ -41,3 +41,35 @@ class DenseLayer(Layer):
 
     def get_output_for(self, x):
         return self.activation(T.dot(x, self.weights) + self.bias)
+
+
+class RecurrentLayer(Layer):
+    def __init__(self, input_dim, output_dim, activation='linear', return_sequences=False):
+        super(RecurrentLayer, self).__init__(input_dim, output_dim, activation)
+
+        W = theano.shared(np.random.randn(input_dim, output_dim), name='W')
+        U = theano.shared(np.random.randn(output_dim, output_dim), name='U')
+        b = theano.shared(np.zeros((output_dim,)), name='b')
+
+        self.W = W
+        self.U = U
+        self.b = b
+        self.params = [self.W, self.U, self.b]
+        self.return_sequences = return_sequences
+
+    def __repr__(self):
+        return '<RecurrentLayer({}, {})>'.format(self.input_dim, self.output_dim)
+
+    def get_output_for_timestep(self, x, state):
+        """for a timestep"""
+        return self.activation(T.dot(x, self.W) + T.dot(state, self.U) + self.b)
+
+    def get_output_for(self, x):
+        """for a sequence"""
+        state = theano.shared(np.zeros(self.output_dim,))
+        y, _ = theano.scan(
+            self.get_output_for_timestep,
+            sequences=x,
+            outputs_info=[state]
+        )
+        return y if self.return_sequences else y[-1]
