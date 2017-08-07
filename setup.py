@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from pip.req import parse_requirements
 
 
-VERSION = '20160303'
+VERSION = '20170807'
 
 reqs = [str(req.req) for req in parse_requirements('reqs.txt', session=False)]
 
